@@ -1,0 +1,7 @@
+# manage_users.yml
+
+- name: Manage users and groups
+  hosts: staging_servers
+  become: true
+  roles:
+    - manage_users
