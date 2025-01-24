@@ -1,0 +1,14 @@
+# meta/main.yml
+
+galaxy_info:
+  role_name: manage_users
+  author: your_name
+  description: Ansible role to manage users, groups, SSH access, and directory permissions
+  license: MIT
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+dependencies: []

@@ -1,0 +1,52 @@
+# tasks/main.yml
+
+# 1. Создание групп
+- name: Create groups
+  ansible.builtin.group:
+    name: "{{ item.name }}"
+    state: present
+  loop: "{{ user_groups }}"
+  become: true
+
+
+
+# 2. Создание пользователей
+- name: Create users
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    password: "{{ item.password }}"
+    groups: "{{ item.groups | join(',') }}"
+    state: present
+  loop: "{{ users }}"
+  become: true
+
+# 3. Настройка SSH-доступа
+- name: Configure SSH keys for users
+  ansible.builtin.file:
+    path: "/home/{{ item.name }}/.ssh"
+    state: directory
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode: "0700"
+  loop: "{{ users }}"
+  become: true
+
+- name: Add SSH authorized keys
+  ansible.builtin.copy:
+    content: "{{ item.ssh_key }}"
+    dest: "/home/{{ item.name }}/.ssh/authorized_keys"
+    owner: "{{ item.name }}"
+    group: "{{ item.name }}"
+    mode: "0600"
+  loop: "{{ users }}"
+  become: true
+
+# 4. Настройка прав доступа к директориям
+- name: Configure permissions for directories
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    group: "{{ item.group }}"
+    mode: "{{ item.mode }}"
+    state: directory
+  loop: "{{ permissions }}"
+  become: true

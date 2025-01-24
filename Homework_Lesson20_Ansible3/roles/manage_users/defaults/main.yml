@@ -1,0 +1,27 @@
+# defaults/main.yml
+
+users:
+  - name: user1
+    password: "{{ 'password1' | password_hash('sha512') }}"
+    ssh_key: "ssh-rsa AAAAB...user1-key"
+    groups: ["group1"]
+  - name: user2
+    password: "{{ 'password2' | password_hash('sha512') }}"
+    ssh_key: "ssh-rsa AAAAB...user2-key"
+    groups: ["group1", "group2"]
+  - name: user3
+    password: "{{ 'password3' | password_hash('sha512') }}"
+    ssh_key: "ssh-rsa AAAAB...user3-key"
+    groups: ["group2"]
+
+user_groups:
+  - name: group1
+  - name: group2
+  
+permissions:
+  - path: "/var/shared"
+    group: "group1"
+    mode: "0770"
+  - path: "/var/secure"
+    group: "group2"
+    mode: "0750"
