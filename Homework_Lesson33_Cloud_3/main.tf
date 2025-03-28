@@ -12,10 +12,10 @@ resource "google_compute_instance_template" "example_instance_template" {
   name_prefix  = "example-instance-template-"
   machine_type = "e2-medium"
 
-  boot_disk {
-    initialize_params {
-      image = "projects/ordinal-stone-450713-n3/global/images/nginx"  # Используем ваш собранный образ
-    }
+  disk {
+    source_image = "projects/ordinal-stone-450713-n3/global/images/nginx"  # Ensure this is a valid image in your project
+    auto_delete  = true
+    boot         = true
   }
 
   network_interface {
@@ -29,9 +29,10 @@ resource "google_compute_instance_template" "example_instance_template" {
 }
 
 resource "google_compute_instance_group_manager" "example_instance_group_manager" {
-  name = "example-instance-group-manager"
-  base_instance_name = "example-instance"
-  zone = "europe-north1-a"
+  name                = "example-instance-group-manager"
+  base_instance_name  = "example-instance"
+  zone                = "europe-north1-a"
+  
   version {
     instance_template = google_compute_instance_template.example_instance_template.self_link
   }
@@ -63,7 +64,7 @@ resource "google_compute_disk" "example_disk" {
 resource "google_compute_health_check" "example_health_check" {
   name               = "example-health-check"
   http_health_check {
-    port = 80
+    port        = 80
     request_path = "/"
   }
   check_interval_sec = 5
@@ -73,9 +74,9 @@ resource "google_compute_health_check" "example_health_check" {
 }
 
 resource "google_compute_backend_service" "example_backend_service" {
-  name        = "example-backend-service"
-  protocol    = "HTTP"
-  port_name   = "http"
+  name          = "example-backend-service"
+  protocol      = "HTTP"
+  port_name     = "http"
   health_checks = [google_compute_health_check.example_health_check.id]
   
   backend {
@@ -98,10 +99,10 @@ resource "google_compute_global_address" "example_ip" {
 }
 
 resource "google_compute_global_forwarding_rule" "example_forwarding_rule" {
-  name        = "example-forwarding-rule"
-  ip_address  = google_compute_global_address.example_ip.address
-  target      = google_compute_target_http_proxy.example_target_http_proxy.id
-  port_range  = "80"
+  name       = "example-forwarding-rule"
+  ip_address = google_compute_global_address.example_ip.address
+  target     = google_compute_target_http_proxy.example_target_http_proxy.id
+  port_range = "80"
 }
 
 resource "google_compute_firewall" "example_firewall" {
